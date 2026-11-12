@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Confirmar correo | Sistema de Facturación Web')}"></head>
+<body class="login-page">
+<button class="theme-toggle login-theme-toggle" type="button" data-theme-toggle hidden aria-label="Activar modo oscuro" aria-pressed="false" title="Activar modo oscuro"><i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i></button>
+<main class="login-stage">
+    <div class="login-orb orb-one" aria-hidden="true"></div><div class="login-orb orb-two" aria-hidden="true"></div><div class="login-grid" aria-hidden="true"></div>
+    <a class="login-brand" th:href="@{/login}" aria-label="Sistema de Facturación Web">
+        <span class="portal-logo" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M9 5h14v23l-3-2-4 2-4-2-3 2V5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13 11h6m-6 5h6m-6 5h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+        <span>Sistema de Facturación <strong>Web</strong></span>
+    </a>
+    <section class="login-card" aria-labelledby="verify-title">
+        <div class="login-card-symbol"><i class="bi bi-envelope-check" aria-hidden="true"></i></div>
+        <p class="portal-eyebrow">SEGURIDAD DE LA CUENTA</p>
+        <h1 id="verify-title">Confirma tu correo</h1>
+        <div th:if="${exito == true}" class="portal-message message-success" role="status">El correo quedó verificado para tu cuenta.</div>
+        <div th:if="${exito == false}" class="portal-message message-warning" role="status">El enlace no es válido, expiró o ya fue utilizado. Solicita una nueva verificación.</div>
+        <p th:unless="${exito != null}" class="login-description">Confirma que tienes acceso a esta dirección. El enlace se utiliza una sola vez.</p>
+        <form th:unless="${exito != null}" method="post" th:action="@{/verificar-correo}" class="login-form">
+            <input type="hidden" name="token" th:value="${token}">
+            <button class="portal-primary login-submit" type="submit">Verificar correo <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+        </form>
+        <p class="login-security"><i class="bi bi-lock-fill" aria-hidden="true"></i> No se modifica la cuenta al abrir el enlace</p>
+    </section>
+    <a class="login-footer" th:href="@{/login}">Volver al inicio</a>
+</main>
+<script th:src="@{/js/login.js}"></script>
+</body></html>

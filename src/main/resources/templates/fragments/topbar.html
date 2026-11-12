@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+	<header th:fragment="topbar(pageTitle, sectionName)" class="topbar">
+		<div class="topbar-heading">
+			<button class="sidebar-toggle btn-icon d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#appSidebar" aria-controls="appSidebar" aria-expanded="false" aria-label="Abrir menú">
+				<i class="bi bi-list" aria-hidden="true"></i>
+			</button>
+			<div>
+				<p class="topbar-kicker" th:text="${sectionName}">Sistema de Facturación Web</p>
+				<h1 class="topbar-title" th:text="${pageTitle}">Inicio</h1>
+			</div>
+		</div>
+		<div class="topbar-meta">
+			<button class="theme-toggle" type="button" data-theme-toggle hidden aria-label="Activar modo oscuro" aria-pressed="false" title="Activar modo oscuro"><i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i></button>
+			<div class="topbar-date">
+				<i class="bi bi-calendar3" aria-hidden="true"></i>
+				<time id="current-date">Fecha actual</time>
+			</div>
+			<a class="topbar-user profile-link" th:href="@{/perfil}" aria-label="Mi perfil: cambiar foto">
+				<span class="user-avatar"><img th:src="@{/perfil/foto}" alt="" width="36" height="36"></span>
+				<span class="user-copy"><strong th:text="${cuentaActual}" th:title="${cuentaActual}">Cuenta</strong><small>Mi perfil · Cambiar foto</small></span>
+			</a>
+			<form method="post" th:action="@{/logout}"><button class="btn btn-outline-success btn-sm" type="submit">Cerrar sesión</button></form>
+		</div>
+	</header>
+</body>
+</html>

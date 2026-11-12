@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"><body>
+<section th:fragment="dashboard" class="report-panel" aria-label="Panel gráfico del resumen">
+    <div class="report-panel-heading"><div><p class="eyebrow">TU ACTIVIDAD EN CIFRAS</p><h3>Panorama de ventas</h3><p>Compara la evolución del período, los clientes y los productos con mayor movimiento.</p></div><div class="report-client-count"><i class="bi bi-people" aria-hidden="true"></i><strong th:text="${panel.clientesFacturados}"></strong><span>Clientes facturados</span></div></div>
+    <div class="report-dashboard">
+        <div th:replace="~{reportes/panel :: grafico('panel-ventas','Evolución de ventas','Total facturado en dólares por día o mes del período seleccionado.',${panel.ventas},'importe','line',false)}"></div>
+        <section class="cliente-panel report-chart-card" data-summary-chart="doughnut" data-unit="importe" aria-labelledby="panel-composicion-title">
+            <header><span class="report-chart-icon"><i class="bi bi-pie-chart" aria-hidden="true"></i></span><div><h4 id="panel-composicion-title">Subtotal e IVA</h4><p>Composición del total facturado, en dólares.</p></div></header>
+            <div class="summary-chart-wrap"><canvas aria-label="Composición del total: subtotal e IVA" role="img"></canvas><p class="summary-chart-status" role="status"></p></div>
+            <ul class="summary-chart-data" hidden><li data-label="Subtotal" th:attr="data-value=${reporte.resumen.subtotal.toPlainString()}"></li><li data-label="IVA" th:attr="data-value=${reporte.resumen.iva.toPlainString()}"></li></ul>
+            <div class="report-composition"><span>Subtotal <strong th:text="|$ ${reporte.resumen.subtotalVisible()}|"></strong></span><span>IVA <strong th:text="|$ ${reporte.resumen.ivaVisible()}|"></strong></span><span>Total <strong th:text="|$ ${reporte.resumen.totalVisible()}|"></strong></span></div>
+        </section>
+        <div th:replace="~{reportes/panel :: grafico('panel-clientes','Ventas por cliente','Hasta 10 clientes con mayor total facturado. Valores en dólares.',${panel.clientes},'importe','bar',true)}"></div>
+        <div th:replace="~{reportes/panel :: grafico('panel-productos','Productos más vendidos','Hasta 10 productos ordenados por cantidad vendida. Las cantidades pueden incluir decimales.',${panel.productos},'cantidad','bar',true)}"></div>
+    </div>
+</section>
+<section th:fragment="grafico(id,titulo,descripcion,filas,unidad,tipo,horizontal)" class="cliente-panel report-chart-card" th:attr="data-summary-chart=${tipo},data-unit=${unidad},data-horizontal=${horizontal}" th:aria-labelledby="|${id}-title|">
+    <header><span class="report-chart-icon"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span><div><h4 th:id="|${id}-title|" th:text="${titulo}"></h4><p th:text="${descripcion}"></p></div></header>
+    <div class="summary-chart-wrap"><canvas th:aria-label="${titulo}" role="img"></canvas><p class="summary-chart-status" role="status"></p></div>
+    <ul class="summary-chart-data" hidden><li th:each="f : ${filas}" th:attr="data-label=|${f.nombre} [${f.id}]|,data-value=${unidad == 'cantidad' ? f.cantidad.toPlainString() : f.total.toPlainString()}"></li></ul>
+    <details class="report-chart-details"><summary>Ver datos detallados</summary><div class="table-responsive"><table class="table management-table align-middle"><thead><tr><th>Nombre / período</th><th th:if="${unidad == 'cantidad'}">Cantidad</th><th>Facturas</th><th>Total ($)</th></tr></thead><tbody><tr th:each="f : ${filas}"><td th:text="${f.nombre}" data-label="Nombre / período"></td><td th:if="${unidad == 'cantidad'}" th:text="${f.cantidad.stripTrailingZeros().toPlainString()}" data-label="Cantidad"></td><td th:text="${f.facturas}" data-label="Facturas"></td><td th:text="${f.totalVisible()}" data-label="Total ($)"></td></tr><tr th:if="${#lists.isEmpty(filas)}"><td colspan="4">Sin movimientos para los filtros seleccionados.</td></tr></tbody></table></div></details>
+</section>
+</body></html>

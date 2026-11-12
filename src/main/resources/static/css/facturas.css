@@ -1,0 +1,19 @@
+.factura-tabla { width:100%; table-layout:auto; }
+.factura-tabla th, .factura-tabla td { vertical-align:middle; }
+.factura-tabla th:nth-child(n+2):nth-child(-n+7), .factura-tabla td[data-valor], .factura-tabla td[data-label="Cantidad"] { text-align:right; }
+.factura-tabla td[data-valor] { min-width:105px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.factura-tabla .factura-producto { min-width:220px; }
+.factura-tabla .factura-cantidad { width:125px; min-width:125px; text-align:right; font-variant-numeric:tabular-nums; }
+.factura-tabla td[data-valor="porcentaje"] { min-width:90px; }
+@media (max-width:767px) {
+    .factura-tabla, .factura-tabla tbody { display:block; }
+    .factura-tabla thead { display:none; }
+    .factura-tabla .factura-linea { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; padding:16px; margin:12px 0; border:1px solid #cde3d9; border-radius:12px; }
+    .factura-tabla td { display:flex; flex-direction:column; gap:5px; min-width:0!important; padding:0; border:0; text-align:right; }
+    .factura-tabla td::before { content:attr(data-label); font-size:.8rem; font-weight:600; color:#526b60; white-space:normal; }
+    .factura-tabla td[data-valor] { white-space:normal; overflow-wrap:anywhere; }
+    .factura-tabla td[data-label="Producto"], .factura-tabla td[data-label="Acciones"] { grid-column:1/-1; text-align:left; }
+    .factura-tabla .factura-producto { min-width:0; width:100%; }
+    .factura-tabla .factura-cantidad { min-width:0; width:100%; }
+    .factura-tabla .factura-quitar { align-self:flex-end; }
+}

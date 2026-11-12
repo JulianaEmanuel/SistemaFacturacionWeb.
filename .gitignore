@@ -1,0 +1,62 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Archivos locales, secretos y resultados de ejecución ###
+.env
+.env.*
+!.env.example
+.envrc
+*.log
+*.tmp
+*.temp
+*.swp
+*~
+*.jar
+*.bak
+*.trn
+*.mdf
+*.ldf
+*.pfx
+*.p12
+*.key
+*.pem
+/.codex/
+/.agents/
+/.aws/
+/.github/modernize/
+/.mvn/local-java.cmd
+/.mvn/maven.config
+/data/perfiles/
+/src/main/resources/application-local.properties
+/src/main/resources/application-sqlserver.properties

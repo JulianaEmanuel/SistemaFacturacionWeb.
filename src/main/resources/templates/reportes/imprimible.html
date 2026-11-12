@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments/layout :: head('Imprimir reporte | Sistema de Facturación Web')}"></head><body class="management-page print-page">
+<link rel="stylesheet" th:href="@{/css/reportes.css}">
+<main class="container-fluid py-4 reporte-impresion"><header><h1 class="h3">Sistema de Facturación Web</h1><h2 class="h4" th:text="${reporte.tipo.titulo}"></h2><p th:text="|${reporte.filtro.desde} a ${reporte.filtro.hasta} · ${reporte.alcance}|"></p><p class="small" th:text="${reporte.filtro.descripcion()}"></p></header>
+<button id="reporte-imprimir" class="btn btn-success mb-3 d-print-none" type="button">Imprimir</button>
+<div th:replace="~{reportes/fragments :: resumen}"></div><p th:if="${reporte.sinVentas()}">Sin movimientos en el período y alcance consultados.</p>
+<p th:if="${reporte.tipo.slug == 'productos'}">El resumen incluye todos los productos filtrados; la tabla muestra el ranking seleccionado.</p>
+<div th:replace="~{reportes/fragments :: tabla(${reporte.filas})}"></div><footer class="small mt-3">Importes facturados; presentación a dos decimales. Sin información de cobros o devoluciones.</footer></main>
+<script th:src="@{/js/reportes.js}"></script></body></html>

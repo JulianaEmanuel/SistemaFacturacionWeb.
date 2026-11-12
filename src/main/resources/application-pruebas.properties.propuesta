@@ -1,0 +1,26 @@
+# BORRADOR PARA REVISION. Spring Boot no carga archivos con sufijo .propuesta.
+# No renombrar ni activar sin aprobación.
+server.port=8081
+server.servlet.session.cookie.name=JSESSIONID_PRUEBAS
+
+app.environment=PRUEBAS
+app.sqlserver.database-name=SistemaFacturacion_Pruebas
+app.environments.pruebas-url=${TEST_BASE_URL:http://localhost:8081}
+app.environments.produccion-url=${PRODUCTION_BASE_URL:http://localhost:8080}
+
+# El nombre de base está fijado; el host de pruebas es obligatorio.
+spring.datasource.url=jdbc:sqlserver://${TEST_DB_SERVER}:${TEST_DB_PORT:1433};databaseName=SistemaFacturacion_Pruebas;integratedSecurity=true;authenticationScheme=NativeAuthentication;encrypt=true;trustServerCertificate=${app.sqlserver.trust-server-certificate:false}
+spring.jpa.hibernate.ddl-auto=none
+
+# No enviar recuperación a Gmail: usar solo un capturador SMTP local/de pruebas.
+spring.mail.host=${TEST_SMTP_HOST:127.0.0.1}
+spring.mail.port=${TEST_SMTP_PORT:1025}
+spring.mail.username=${TEST_SMTP_USERNAME:}
+spring.mail.password=${TEST_SMTP_PASSWORD:}
+spring.mail.properties.mail.smtp.auth=${TEST_SMTP_AUTH:false}
+spring.mail.properties.mail.smtp.starttls.enable=${TEST_SMTP_STARTTLS:false}
+app.recovery.hmac-key=${RECOVERY_HMAC_KEY}
+app.recovery.public-base-url=${TEST_BASE_URL:http://localhost:8081}
+
+# No existe integración SRI en el código revisado. Debe seguir deshabilitada.
+app.sri.enabled=false

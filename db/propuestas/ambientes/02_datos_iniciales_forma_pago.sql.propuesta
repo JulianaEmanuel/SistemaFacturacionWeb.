@@ -1,0 +1,144 @@
+/*
+  DATOS INICIALES SINTETICOS PARA PRUEBAS - NO EJECUTADO.
+  Requiere tener seleccionada SistemaFacturacion_Pruebas en SSMS.
+  No crea objetos, no actualiza filas existentes y no contiene datos personales.
+  No ejecutar en SistemaFacturacionWeb ni en otra base.
+*/
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+
+IF DB_NAME() <> N'SistemaFacturacion_Pruebas'
+    THROW 52100, N'Destino incorrecto. Seleccione SistemaFacturacion_Pruebas.', 1;
+IF @@TRANCOUNT <> 0
+    THROW 52101, N'No ejecute este seed dentro de otra transaccion.', 1;
+IF OBJECT_ID(N'dbo.FormaPago', N'U') IS NULL
+    THROW 52102, N'No existe dbo.FormaPago. Aplique y valide primero el baseline.', 1;
+
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    DECLARE @resultadoBloqueo int;
+    EXEC @resultadoBloqueo = sys.sp_getapplock
+        @Resource = N'SistemaFacturacion_Pruebas.Seed.FormaPago.v1',
+        @LockMode = N'Exclusive',
+        @LockOwner = N'Transaction',
+        @LockTimeout = 10000;
+    IF @resultadoBloqueo IS NULL OR @resultadoBloqueo < 0
+        THROW 52103, N'No se pudo obtener el bloqueo del seed FormaPago.', 1;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM sys.columns AS c
+        JOIN sys.types AS t ON t.user_type_id = c.user_type_id
+        WHERE c.object_id = OBJECT_ID(N'dbo.FormaPago')
+          AND c.name = N'CODIGO'
+          AND t.name = N'varchar'
+          AND c.max_length = 30
+          AND c.is_nullable = 0
+          AND c.is_computed = 0
+    )
+       OR NOT EXISTS (
+        SELECT 1
+        FROM sys.columns AS c
+        JOIN sys.types AS t ON t.user_type_id = c.user_type_id
+        WHERE c.object_id = OBJECT_ID(N'dbo.FormaPago')
+          AND c.name = N'NOMBRE'
+          AND t.name = N'nvarchar'
+          AND c.max_length = 160
+          AND c.is_nullable = 0
+          AND c.is_computed = 0
+    )
+       OR NOT EXISTS (
+        SELECT 1
+        FROM sys.columns AS c
+        JOIN sys.types AS t ON t.user_type_id = c.user_type_id
+        WHERE c.object_id = OBJECT_ID(N'dbo.FormaPago')
+          AND c.name = N'ACTIVA'
+          AND t.name = N'bit'
+          AND c.max_length = 1
+          AND c.is_nullable = 0
+          AND c.is_computed = 0
+    )
+        THROW 52104, N'Las columnas de dbo.FormaPago no coinciden con la estructura esperada.', 1;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM sys.indexes AS i
+        JOIN sys.index_columns AS ic
+          ON ic.object_id = i.object_id AND ic.index_id = i.index_id
+        JOIN sys.columns AS c
+          ON c.object_id = ic.object_id AND c.column_id = ic.column_id
+        WHERE i.object_id = OBJECT_ID(N'dbo.FormaPago')
+          AND i.is_unique = 1
+          AND i.is_disabled = 0
+          AND i.is_hypothetical = 0
+          AND i.has_filter = 0
+          AND ic.key_ordinal = 1
+          AND c.name = N'CODIGO'
+          AND NOT EXISTS (
+              SELECT 1
+              FROM sys.index_columns AS extra
+              WHERE extra.object_id = i.object_id
+                AND extra.index_id = i.index_id
+                AND extra.key_ordinal > 1
+          )
+    )
+        THROW 52105, N'Falta la clave unica esperada de FormaPago.CODIGO.', 1;
+
+    DECLARE @Formas TABLE (
+        CODIGO varchar(30) NOT NULL PRIMARY KEY,
+        NOMBRE nvarchar(80) NOT NULL
+    );
+    INSERT INTO @Formas (CODIGO, NOMBRE)
+    VALUES
+        ('EFECTIVO', N'Efectivo'),
+        ('TRANSFERENCIA', N'Transferencia bancaria'),
+        ('DEBITO', N'Tarjeta de débito'),
+        ('CREDITO', N'Tarjeta de crédito');
+
+    IF EXISTS (
+        SELECT 1
+        FROM dbo.FormaPago AS existente
+        JOIN @Formas AS esperado
+          ON existente.CODIGO COLLATE Latin1_General_100_BIN2
+           = esperado.CODIGO COLLATE Latin1_General_100_BIN2
+        WHERE existente.NOMBRE COLLATE Latin1_General_100_BIN2
+           <> esperado.NOMBRE COLLATE Latin1_General_100_BIN2
+           OR existente.ACTIVA <> 1
+    )
+        THROW 52106, N'Hay un codigo esperado con nombre distinto o inactivo; no se modificaron filas.', 1;
+
+    INSERT INTO dbo.FormaPago (CODIGO, NOMBRE, ACTIVA)
+    SELECT esperado.CODIGO, esperado.NOMBRE, 1
+    FROM @Formas AS esperado
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM dbo.FormaPago AS existente WITH (UPDLOCK, HOLDLOCK)
+        WHERE existente.CODIGO COLLATE Latin1_General_100_BIN2
+            = esperado.CODIGO COLLATE Latin1_General_100_BIN2
+    );
+
+    IF (
+        SELECT COUNT_BIG(*)
+        FROM dbo.FormaPago AS existente
+        JOIN @Formas AS esperado
+          ON existente.CODIGO COLLATE Latin1_General_100_BIN2
+           = esperado.CODIGO COLLATE Latin1_General_100_BIN2
+        WHERE existente.NOMBRE COLLATE Latin1_General_100_BIN2
+            = esperado.NOMBRE COLLATE Latin1_General_100_BIN2
+          AND existente.ACTIVA = 1
+    ) <> 4
+        THROW 52107, N'La verificacion final del catalogo FormaPago no coincide.', 1;
+
+    COMMIT TRANSACTION;
+
+    SELECT CODIGO, NOMBRE, ACTIVA
+    FROM dbo.FormaPago
+    WHERE CODIGO IN ('EFECTIVO', 'TRANSFERENCIA', 'DEBITO', 'CREDITO')
+    ORDER BY CODIGO;
+END TRY
+BEGIN CATCH
+    IF XACT_STATE() <> 0
+        ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;

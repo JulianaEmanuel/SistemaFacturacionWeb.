@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Acceso denegado | Sistema de Facturación Web')}"></head>
+<body class="dashboard-page management-page"><main class="container py-5"><div class="access-denied" role="alert"><h1 class="h3">Acceso denegado</h1><p>No tienes permisos para administrar usuarios o tipos de usuario.</p><a class="btn btn-success" th:href="@{/}">Volver al inicio</a></div></main></body>
+</html>

@@ -1,0 +1,28 @@
+# BORRADOR PARA REVISION. Spring Boot no carga archivos con sufijo .propuesta.
+# No renombrar ni activar sin aprobación.
+server.port=8080
+server.servlet.session.cookie.name=JSESSIONID_PRODUCCION
+server.servlet.session.cookie.secure=${SESSION_COOKIE_SECURE:true}
+
+app.environment=PRODUCCIÓN
+app.sqlserver.database-name=SistemaFacturacionWeb
+app.environments.pruebas-url=${TEST_BASE_URL:http://localhost:8081}
+app.environments.produccion-url=${PRODUCTION_BASE_URL}
+
+# El nombre de base está fijado; el host productivo es obligatorio.
+spring.datasource.url=jdbc:sqlserver://${PROD_DB_SERVER}:${PROD_DB_PORT:1433};databaseName=SistemaFacturacionWeb;integratedSecurity=true;authenticationScheme=NativeAuthentication;encrypt=true;trustServerCertificate=false
+spring.jpa.hibernate.ddl-auto=none
+
+# En producción, SMTP y HMAC se inyectan solo en el proceso productivo.
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=${SMTP_USERNAME}
+spring.mail.password=${SMTP_PASSWORD}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
+app.recovery.hmac-key=${RECOVERY_HMAC_KEY}
+app.recovery.public-base-url=${RECOVERY_PUBLIC_BASE_URL}
+
+# No habilitar integraciones productivas hasta que se implementen y aprueben.
+app.sri.enabled=false

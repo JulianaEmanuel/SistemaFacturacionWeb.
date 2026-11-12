@@ -1,0 +1,49 @@
+/*
+  BORRADOR PARA REVISION - NO EJECUTADO.
+  Este archivo NO crea el esquema ni copia datos.
+  Requiere completar y aprobar el servidor y la collation antes de continuar.
+  Mientras los marcadores sigan presentes, el script aborta sin crear la base.
+  No ejecutar en el servidor productivo.
+*/
+USE [master];
+GO
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+
+IF DB_NAME() <> N'master'
+    THROW 52000, N'Conéctese a master en el servidor de pruebas aprobado.', 1;
+IF @@TRANCOUNT <> 0
+    THROW 52001, N'No ejecute este borrador dentro de una transacción.', 1;
+
+DECLARE @ServidorAprobado sysname = N'__SERVIDOR_DE_PRUEBAS_PENDIENTE__';
+DECLARE @CollationAprobada sysname = N'__COLLATION_PENDIENTE__';
+
+IF @ServidorAprobado = N'__SERVIDOR_DE_PRUEBAS_PENDIENTE__'
+   OR @CollationAprobada = N'__COLLATION_PENDIENTE__'
+    THROW 52002, N'Faltan el servidor y la collation aprobados; no se creó ninguna base.', 1;
+
+IF CONVERT(sysname, SERVERPROPERTY('ServerName')) <> @ServidorAprobado
+    THROW 52003, N'El servidor actual no coincide con el servidor de pruebas aprobado.', 1;
+
+IF NOT EXISTS (SELECT 1 FROM sys.fn_helpcollations() WHERE name = @CollationAprobada)
+    THROW 52004, N'La collation aprobada no existe en este servidor.', 1;
+
+IF DB_ID(N'SistemaFacturacion_Pruebas') IS NOT NULL
+    THROW 52005, N'La base SistemaFacturacion_Pruebas ya existe; no se modificó.', 1;
+
+DECLARE @Sql nvarchar(max) =
+    N'CREATE DATABASE [SistemaFacturacion_Pruebas] COLLATE '
+    + QUOTENAME(@CollationAprobada) + N';';
+EXEC sys.sp_executesql @Sql;
+
+SELECT
+    DB_NAME(database_id) AS BaseCreada,
+    collation_name AS Collation
+FROM sys.databases
+WHERE database_id = DB_ID(N'SistemaFacturacion_Pruebas');
+
+/*
+  El esquema se incorporará en un archivo aparte cuando se obtenga y revise
+  desde SSMS el baseline DDL schema-only de las ocho tablas y sus dependencias.
+  No se agregan INSERT, usuarios, credenciales, facturas ni datos personales.
+*/

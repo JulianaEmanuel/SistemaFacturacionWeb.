@@ -1,0 +1,14 @@
+/*
+  ENVOLTORIO DE DESTINO PARA SSMS - NO EJECUTADO.
+  Requiere SSMS Query > SQLCMD Mode habilitado.
+  El dump exportado es solo un include; no ejecutarlo directamente.
+  Confirmar también en la barra de SSMS que la base seleccionada es
+  SistemaFacturacion_Pruebas. El guardado del nombre no identifica servidor.
+*/
+:ON ERROR EXIT
+
+IF DB_NAME() <> N'SistemaFacturacion_Pruebas'
+    THROW 52010, N'Destino incorrecto. Seleccione SistemaFacturacion_Pruebas.', 1;
+GO
+
+:r "C:\Users\Juliana\Downloads\Proyectos\SistemaFacturacionWeb\db\propuestas\ambientes\01_esquema_pruebas_baseline.sql"

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Empleados | Sistema de Facturación Web')}"></head>
+<body class="dashboard-page management-page">
+<div class="app-shell">
+    <aside th:replace="~{fragments/sidebar :: sidebar('empleados')}"></aside>
+    <div class="app-main">
+        <header th:replace="~{fragments/topbar :: topbar('Empleados', 'GESTIÓN')}"></header>
+        <main class="content-area">
+            <section class="page-intro" aria-labelledby="empleados-title">
+                <p class="eyebrow">EQUIPO DE TRABAJO</p><h2 id="empleados-title">Gestión de empleados</h2>
+                <p class="intro-copy">Administra las personas y los usuarios asociados al equipo.</p>
+            </section>
+            <div th:if="${successMessage}" class="alert alert-success" role="status" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+            <section class="cliente-panel" aria-label="Listado de empleados">
+                <div class="cliente-toolbar">
+                    <form class="cliente-search" method="get" th:action="@{/modulos/empleados}">
+                        <label class="visually-hidden" for="empleado-search">Buscar empleados</label>
+                        <div class="search-input-wrap"><i class="bi bi-search" aria-hidden="true"></i><input id="empleado-search" class="form-control" type="search" name="q" th:value="${filtro}" placeholder="Cédula, nombres, apellidos o usuario"></div>
+                        <button class="btn btn-outline-success" type="submit">Buscar</button>
+                        <a class="btn btn-outline-secondary" th:href="@{/modulos/empleados}">Limpiar</a>
+                    </form>
+                    <a th:if="${administracionDisponible}" class="btn btn-outline-success cliente-create" th:href="@{/modulos/empleados/nuevo}"><i class="bi bi-link-45deg" aria-hidden="true"></i> Asociar persona existente</a>
+                    <a th:if="${administracionDisponible}" class="btn btn-success cliente-create" th:href="@{/modulos/empleados/nueva-cuenta}"><i class="bi bi-person-plus" aria-hidden="true"></i> Nuevo empleado</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="management-table table invoice-table align-middle mb-0">
+                        <thead><tr><th scope="col">ID</th><th scope="col">Cédula</th><th scope="col">Nombres</th><th scope="col">Apellidos</th><th scope="col">Usuario</th><th scope="col" class="text-end">Acciones</th></tr></thead>
+                        <tbody>
+                        <tr th:each="empleado : ${empleados}">
+                            <td th:text="${empleado.idEmpleado}" data-label="ID"></td>
+                            <td th:text="${#strings.trim(empleado.persona.cedulaPersona)}" data-label="Cédula"></td>
+                            <td th:text="${#strings.trim(empleado.persona.nombresPersona)}" data-label="Nombres"></td>
+                            <td th:text="${#strings.trim(empleado.persona.apellidosPersona)}" data-label="Apellidos"></td>
+                            <td th:text="${#strings.trim(empleado.usuario.nombreUsuario)}" data-label="Usuario"></td>
+                            <td class="text-end cliente-actions" data-label="Acciones">
+                                <a th:if="${administracionDisponible}" class="btn btn-sm btn-outline-success" th:href="@{/modulos/empleados/{id}/editar(id=${empleado.idEmpleado})}"><i class="bi bi-pencil" aria-hidden="true"></i> Editar</a>
+                                <form th:if="${administracionDisponible}" class="d-inline" method="post" th:action="@{/modulos/empleados/{id}/eliminar(id=${empleado.idEmpleado})}" onsubmit="return confirm('¿Eliminar este empleado? Si tiene facturas no se podrá eliminar. Se conservarán la persona y el usuario asociados.')">
+                                    <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash" aria-hidden="true"></i> Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(empleados)}"><td class="empty-invoices" colspan="6">No hay empleados que coincidan con la búsqueda.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

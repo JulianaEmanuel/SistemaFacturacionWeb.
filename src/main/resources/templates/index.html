@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Inicio | Sistema de Facturación Web')}"></head>
+<body class="dashboard-page">
+<div class="app-shell">
+<aside th:replace="~{fragments/sidebar :: sidebar('dashboard')}"></aside>
+<div class="app-main">
+<header th:replace="~{fragments/topbar :: topbar('Inicio', 'Sistema de Facturación Web')}"></header>
+<main class="content-area dashboard-content">
+<section class="welcome-panel" aria-labelledby="welcome-title">
+<div><p class="portal-eyebrow">TU NEGOCIO, EN ORDEN</p><h2 id="welcome-title">Hola, <span th:text="${cuentaActual}">Usuario</span><span class="welcome-dot">.</span></h2><p>Aquí comienza un buen día de gestión.<br>Consulta tu actividad y continúa donde lo dejaste.</p><a class="portal-primary" th:href="@{/modulos/facturas/nuevo}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Crear nueva factura</a></div>
+<div class="welcome-art" aria-hidden="true"><span class="art-circle"></span><div class="art-receipt"><span class="receipt-check">✓</span><span class="receipt-line long"></span><span class="receipt-line"></span><span class="receipt-line long"></span><span class="receipt-total"></span></div><span class="art-spark spark-one">+</span><span class="art-spark spark-two">✦</span></div>
+</section>
+<div class="dashboard-heading"><div><p class="portal-eyebrow">DE UN VISTAZO</p><h2>Resumen de tu actividad</h2></div><span class="scope-pill" th:text="${panel != null ? panel.alcance : 'Indicadores no disponibles'}"></span></div>
+<div th:if="${panelAviso != null}" class="portal-message message-warning" role="status" th:text="${panelAviso}"></div>
+<div th:if="${panel != null and panel.aviso != null}" class="portal-message message-warning" role="status" th:text="${panel.aviso}"></div>
+<section class="dashboard-metrics" aria-label="Indicadores reales del sistema">
+<article class="dashboard-metric"><div class="metric-label"><span>Clientes</span><span class="stat-icon stat-blue"><i class="bi bi-people" aria-hidden="true"></i></span></div><strong th:text="${panel != null ? panel.clientes : '—'}"></strong><small>Personas en el directorio</small></article>
+<article class="dashboard-metric"><div class="metric-label"><span>Productos</span><span class="stat-icon stat-violet"><i class="bi bi-box-seam" aria-hidden="true"></i></span></div><strong th:text="${panel != null ? panel.productos : '—'}"></strong><small>En el catálogo actual</small></article>
+<article class="dashboard-metric"><div class="metric-label"><span>Facturas</span><span class="stat-icon stat-cyan"><i class="bi bi-receipt" aria-hidden="true"></i></span></div><strong th:text="${panel != null and panel.facturas != null ? panel.facturas : '—'}"></strong><small>Documentos emitidos</small></article>
+<article class="dashboard-metric"><div class="metric-label"><span>Ventas acumuladas</span><span class="stat-icon stat-rose"><i class="bi bi-currency-dollar" aria-hidden="true"></i></span></div><strong th:text="${panel != null ? panel.ventasVisible() : '—'}"></strong><small>Total facturado histórico</small></article>
+</section>
+<div class="dashboard-lower">
+<section class="recent-panel" aria-labelledby="recent-title"><div class="dashboard-heading"><h2 id="recent-title">Actividad reciente</h2><a class="subtle-link" th:href="@{/modulos/facturas}">Ver facturas <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a></div><p class="section-caption">Últimas facturas de tu alcance autorizado</p>
+<div class="recent-list" th:if="${panel != null and !#lists.isEmpty(panel.actividad)}"><a class="recent-item" th:each="a : ${panel.actividad}" th:href="@{/modulos/facturas/{id}(id=${a.id})}"><span class="activity-icon"><i class="bi bi-file-earmark-check" aria-hidden="true"></i></span><span class="activity-copy"><strong th:text="|Factura #${a.id}|"></strong><span th:text="${a.cliente}"></span><time th:datetime="${a.fecha}" th:text="${#temporals.format(a.fecha,'dd MMM yyyy · HH:mm')}"></time></span><span class="activity-amount" th:text="${a.totalVisible()}"></span></a></div>
+<div class="dashboard-empty" th:if="${panel == null or #lists.isEmpty(panel.actividad)}"><span class="empty-symbol"><i class="bi bi-inbox" aria-hidden="true"></i></span><h3>Aún no hay actividad para mostrar</h3><p>Las facturas disponibles aparecerán aquí cuando se registren.</p></div>
+</section>
+<section class="quick-panel" aria-labelledby="quick-title"><h2 id="quick-title">Accesos rápidos</h2><p class="section-caption">Tus tareas de todos los días</p><div class="quick-links">
+<a class="quick-link" th:href="@{/modulos/clientes}"><span class="stat-icon stat-blue"><i class="bi bi-people" aria-hidden="true"></i></span><span>Clientes<small>Consulta tu directorio</small></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="quick-link" th:href="@{/modulos/productos}"><span class="stat-icon stat-violet"><i class="bi bi-box-seam" aria-hidden="true"></i></span><span>Productos<small>Explora el catálogo</small></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="quick-link" th:href="@{/modulos/facturas/nuevo}"><span class="stat-icon stat-cyan"><i class="bi bi-plus-lg" aria-hidden="true"></i></span><span>Nueva factura<small>Registra una venta</small></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="quick-link" th:href="@{/modulos/reportes}"><span class="stat-icon stat-rose"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span><span>Reportes<small>Consulta tus resultados</small></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+</div></section>
+</div><footer class="dashboard-footer">Sistema de Facturación Web <span>Gestión que avanza contigo</span></footer>
+</main></div></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script><script th:src="@{/js/app.js}"></script>
+</body></html>

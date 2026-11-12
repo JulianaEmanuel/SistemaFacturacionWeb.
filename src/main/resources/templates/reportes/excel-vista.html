@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Vista de Excel | Sistema de Facturación Web')}"></head>
+<body class="management-page excel-vista-page">
+<style>
+    .excel-vista-page { background: var(--bs-body-bg, #fff); }
+    .excel-barra { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; justify-content:space-between; }
+    .excel-hoja { overflow:auto; max-height:72vh; border:1px solid #c8ccd0; border-radius:0 0 .375rem .375rem; }
+    .excel-grid { border-collapse:separate; border-spacing:0; font-size:.85rem; font-family: Calibri, "Segoe UI", Arial, sans-serif; }
+    .excel-grid th, .excel-grid td { border-right:1px solid #d9dcdf; border-bottom:1px solid #d9dcdf; padding:.2rem .5rem; white-space:nowrap; min-width:5.5rem; }
+    .excel-grid thead th { position:sticky; top:0; z-index:2; background:#eef0f2; color:#444; text-align:center; font-weight:600; }
+    .excel-grid .excel-num-fila { position:sticky; left:0; z-index:1; background:#eef0f2; color:#555; text-align:right; min-width:2.75rem; font-weight:600; }
+    .excel-grid thead .excel-esquina { left:0; z-index:3; }
+    .excel-grid td.excel-encabezado { background:#1e6b3a; color:#fff; font-weight:700; white-space:normal; }
+    .excel-grid td.excel-numero { text-align:right; font-variant-numeric: tabular-nums; }
+    .excel-tabs .nav-link { border-radius:0; }
+    .excel-tabs .nav-link.active { color:#1e6b3a; font-weight:600; border-bottom-color:#fff; }
+</style>
+<main class="container-fluid py-3">
+    <header class="excel-barra mb-3">
+        <div>
+            <p class="text-muted small mb-1"><i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i> Vista previa del archivo Excel</p>
+            <h1 class="h4 mb-0" th:text="${tipo.titulo}">Reporte</h1>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-success" th:href="${descarga}"><i class="bi bi-download" aria-hidden="true"></i> Descargar Excel</a>
+            <button class="btn btn-outline-secondary" type="button" onclick="window.close()">Cerrar</button>
+        </div>
+    </header>
+
+    <ul class="nav nav-tabs excel-tabs" role="tablist">
+        <li class="nav-item" role="presentation" th:each="hoja, e : ${libro.hojas}">
+            <button class="nav-link" th:classappend="${e.first} ? 'active'" type="button" role="tab" data-bs-toggle="tab"
+                    th:attr="data-bs-target=|#hoja-${e.index}|,aria-controls=|hoja-${e.index}|,aria-selected=${e.first}"
+                    th:id="|tab-hoja-${e.index}|" th:text="${hoja.nombre}">Hoja</button>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <section class="tab-pane fade excel-hoja" th:each="hoja, e : ${libro.hojas}" th:classappend="${e.first} ? 'show active'"
+                 th:id="|hoja-${e.index}|" role="tabpanel" th:attr="aria-labelledby=|tab-hoja-${e.index}|">
+            <table class="excel-grid">
+                <thead><tr><th class="excel-num-fila excel-esquina" scope="col"></th><th scope="col" th:each="c : ${hoja.columnas}" th:text="${c}">A</th></tr></thead>
+                <tbody>
+                    <tr th:each="fila : ${hoja.filas}">
+                        <th class="excel-num-fila" scope="row" th:text="${fila.numero}">1</th>
+                        <td th:each="celda : ${fila.celdas}" th:text="${celda.texto}"
+                            th:classappend="${celda.encabezado} ? 'excel-encabezado' : (${celda.numero} ? 'excel-numero' : '')"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+    <p class="small text-muted mt-2 mb-0">Esta vista muestra el mismo contenido del archivo. Para filtrar u ordenar como en Excel, descárgalo.</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

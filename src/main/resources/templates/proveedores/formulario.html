@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${modoEdicion} ? 'Editar proveedor | Sistema de Facturación Web' : 'Registrar proveedor | Sistema de Facturación Web')}"></head>
+<body class="dashboard-page management-page">
+	<div class="app-shell">
+		<aside th:replace="~{fragments/sidebar :: sidebar('proveedores')}"></aside>
+		<div class="app-main">
+			<header th:replace="~{fragments/topbar :: topbar(${modoEdicion} ? 'Editar proveedor' : 'Registrar proveedor', 'GESTIÓN DE PROVEEDORES')}"></header>
+			<main class="content-area">
+				<section class="page-intro" aria-labelledby="proveedor-form-title">
+					<p class="eyebrow">DIRECTORIO</p>
+					<h2 id="proveedor-form-title" th:text="${modoEdicion} ? 'Editar proveedor' : 'Registrar proveedor'">Registrar proveedor</h2>
+					<p class="intro-copy" th:text="${modoEdicion} ? 'Actualiza únicamente el correo del proveedor.' : 'Asocia una persona existente y registra su correo opcional.'">Asocia una persona existente y registra su correo opcional.</p>
+				</section>
+				<section class="cliente-panel cliente-form-panel proveedor-form-panel">
+					<div th:if="${!modoEdicion and #lists.isEmpty(personas)}" class="alert alert-warning" role="status">No hay personas disponibles. Registra una persona en Clientes antes de crear un proveedor.</div>
+					<form method="post" th:action="${formAction}" th:object="${proveedorForm}" novalidate>
+						<div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger" role="alert">Revisa los campos marcados antes de continuar.</div>
+						<div class="cliente-form-grid proveedor-form-grid">
+							<div class="mb-3 proveedor-persona-field">
+								<label class="form-label" for="idPersona">Persona <span th:if="${!modoEdicion}" class="required-mark">*</span></label>
+								<div th:if="${modoEdicion}" class="proveedor-persona-readonly">
+									<strong th:text="|${#strings.trim(proveedor.persona.cedulaPersona)} — ${#strings.trim(proveedor.persona.nombresPersona)} ${#strings.trim(proveedor.persona.apellidosPersona)}|"></strong>
+									<small>La persona asociada no se modifica desde este formulario.</small>
+									<input type="hidden" th:field="*{idPersona}">
+								</div>
+								<div th:unless="${modoEdicion}">
+									<select id="idPersona" class="form-select" th:field="*{idPersona}" required aria-describedby="persona-error">
+										<option value="">Selecciona una persona</option>
+										<option th:each="persona : ${personas}" th:value="${persona.idPersona}" th:text="|${#strings.trim(persona.cedulaPersona)} — ${#strings.trim(persona.nombresPersona)} ${#strings.trim(persona.apellidosPersona)}|"></option>
+									</select>
+									<div class="field-hint">Solo aparecen personas que aún no son proveedoras.</div>
+								</div>
+								<div id="persona-error" class="field-error" th:if="${#fields.hasErrors('idPersona')}" th:errors="*{idPersona}"></div>
+							</div>
+							<div class="mb-3">
+								<label class="form-label" for="email">Correo electrónico <span class="optional-label">Opcional</span></label>
+								<input id="email" class="form-control" type="email" th:field="*{email}" maxlength="100" autocomplete="email" aria-describedby="email-error">
+								<div id="email-error" class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+							</div>
+						</div>
+						<div class="cliente-form-actions">
+							<a class="btn btn-outline-secondary" th:href="@{/modulos/proveedores}">Cancelar</a>
+							<button class="btn btn-success" type="submit" th:disabled="${!modoEdicion and #lists.isEmpty(personas)}"><i class="bi bi-check2" aria-hidden="true"></i> <span th:text="${modoEdicion} ? 'Guardar cambios' : 'Registrar proveedor'">Registrar proveedor</span></button>
+						</div>
+					</form>
+				</section>
+			</main>
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

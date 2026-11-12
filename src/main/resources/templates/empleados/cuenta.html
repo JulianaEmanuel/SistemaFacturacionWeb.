@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Nuevo empleado | Sistema de Facturación Web')}"></head>
+<body class="dashboard-page management-page">
+<div class="app-shell">
+    <aside th:replace="~{fragments/sidebar :: sidebar('empleados')}"></aside>
+    <div class="app-main">
+        <header th:replace="~{fragments/topbar :: topbar('Nuevo empleado', 'GESTIÓN DE EMPLEADOS')}"></header>
+        <main class="content-area">
+            <section class="page-intro" aria-labelledby="cuenta-title">
+                <p class="eyebrow">EQUIPO DE TRABAJO</p>
+                <h2 id="cuenta-title">Registrar empleado o administrador</h2>
+                <p class="intro-copy">Ingresa los datos del empleado y su usuario. Se crean juntos y la persona queda lista para facturar. Con el rol Empleado la cuenta no tendrá permisos
+                    de administración: solo podrá ver clientes, productos, sus propias facturas y sus reportes.</p>
+            </section>
+            <section class="cliente-panel cliente-form-panel">
+                <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+                <form method="post" th:action="@{/modulos/empleados/nueva-cuenta}" th:object="${cuentaEmpleadoForm}" novalidate>
+                    <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger" role="alert">Revisa los campos marcados antes de continuar.
+                        <div th:each="error : ${#fields.globalErrors()}" th:text="${error}"></div>
+                    </div>
+
+                    <h3 class="h6 mt-2 mb-3">Datos personales</h3>
+                    <div class="cliente-form-grid">
+                        <div class="mb-3">
+                            <label class="form-label" for="cedulaPersona">Cédula <span class="required-mark">*</span></label>
+                            <input id="cedulaPersona" class="form-control" th:field="*{cedulaPersona}" th:classappend="${#fields.hasErrors('cedulaPersona')} ? 'is-invalid' : ''" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" autocomplete="off" required>
+                            <div class="field-hint">10 dígitos.</div>
+                            <div class="field-error" th:if="${#fields.hasErrors('cedulaPersona')}" th:errors="*{cedulaPersona}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="fechaNacimientoPersona">Fecha de nacimiento <span class="required-mark">*</span></label>
+                            <input id="fechaNacimientoPersona" class="form-control" type="date" th:field="*{fechaNacimientoPersona}" th:classappend="${#fields.hasErrors('fechaNacimientoPersona')} ? 'is-invalid' : ''" required>
+                            <div class="field-error" th:if="${#fields.hasErrors('fechaNacimientoPersona')}" th:errors="*{fechaNacimientoPersona}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="nombresPersona">Nombres <span class="required-mark">*</span></label>
+                            <input id="nombresPersona" class="form-control" th:field="*{nombresPersona}" th:classappend="${#fields.hasErrors('nombresPersona')} ? 'is-invalid' : ''" maxlength="100" autocomplete="off" required>
+                            <div class="field-error" th:if="${#fields.hasErrors('nombresPersona')}" th:errors="*{nombresPersona}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="apellidosPersona">Apellidos <span class="required-mark">*</span></label>
+                            <input id="apellidosPersona" class="form-control" th:field="*{apellidosPersona}" th:classappend="${#fields.hasErrors('apellidosPersona')} ? 'is-invalid' : ''" maxlength="100" autocomplete="off" required>
+                            <div class="field-error" th:if="${#fields.hasErrors('apellidosPersona')}" th:errors="*{apellidosPersona}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="correoPersona">Correo electrónico <span class="required-mark">*</span></label>
+                            <input id="correoPersona" class="form-control" type="email" th:field="*{correoPersona}" th:classappend="${#fields.hasErrors('correoPersona')} ? 'is-invalid' : ''" maxlength="254" autocomplete="off" required>
+                            <div class="field-error" th:if="${#fields.hasErrors('correoPersona')}" th:errors="*{correoPersona}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="telefonoPersona">Teléfono</label>
+                            <input id="telefonoPersona" class="form-control" type="tel" th:field="*{telefonoPersona}" th:classappend="${#fields.hasErrors('telefonoPersona')} ? 'is-invalid' : ''" maxlength="25" autocomplete="off">
+                            <div class="field-error" th:if="${#fields.hasErrors('telefonoPersona')}" th:errors="*{telefonoPersona}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="direccionPersona">Dirección <span class="required-mark">*</span></label>
+                            <input id="direccionPersona" class="form-control" th:field="*{direccionPersona}" th:classappend="${#fields.hasErrors('direccionPersona')} ? 'is-invalid' : ''" maxlength="250" autocomplete="off" required>
+                            <div class="field-error" th:if="${#fields.hasErrors('direccionPersona')}" th:errors="*{direccionPersona}"></div>
+                        </div>
+                    </div>
+
+                    <h3 class="h6 mt-3 mb-3">Cuenta de acceso</h3>
+                    <fieldset class="mb-3">
+                        <legend class="form-label fs-6">Rol <span class="required-mark">*</span></legend>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="rol-empleado" th:field="*{administrador}" value="false">
+                            <label class="form-check-label" for="rol-empleado"><strong>Empleado</strong>: factura y ve clientes, productos, sus facturas y sus reportes.</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="rol-administrador" th:field="*{administrador}" value="true">
+                            <label class="form-check-label" for="rol-administrador"><strong>Administrador</strong>: acceso a todos los módulos y también puede facturar.</label>
+                        </div>
+                    </fieldset>
+                    <div class="cliente-form-grid">
+                        <div class="mb-3">
+                            <label class="form-label" for="nombre">Nombre de usuario <span class="required-mark">*</span></label>
+                            <input id="nombre" class="form-control" th:field="*{nombre}" th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''" maxlength="100" autocomplete="off" required>
+                            <div class="field-hint">Con este nombre iniciará sesión el empleado.</div>
+                            <div class="field-error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="idTipo">Tipo de usuario (solo para el rol Empleado)</label>
+                            <select id="idTipo" class="form-select" th:field="*{idTipo}" th:classappend="${#fields.hasErrors('idTipo')} ? 'is-invalid' : ''">
+                                <option th:if="${#lists.isEmpty(tipos)}" value="">EMPLEADO (se creará automáticamente)</option>
+                                <option th:each="t : ${tipos}" th:value="${t.id}" th:text="${#strings.trim(t.nombre)}"></option>
+                            </select>
+                            <div class="field-hint">Si eliges el rol Administrador, este campo no se usa.</div>
+                            <div class="field-error" th:if="${#fields.hasErrors('idTipo')}" th:errors="*{idTipo}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="password">Contraseña <span class="required-mark">*</span></label>
+                            <input id="password" class="form-control" name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password" required>
+                            <div class="field-hint">Entre 12 y 128 caracteres.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="confirmation">Confirmar contraseña <span class="required-mark">*</span></label>
+                            <input id="confirmation" class="form-control" name="confirmation" type="password" minlength="12" maxlength="128" autocomplete="new-password" required>
+                        </div>
+                    </div>
+                    <div class="cliente-form-actions">
+                        <a class="btn btn-outline-secondary" th:href="@{/modulos/empleados}">Cancelar</a>
+                        <button class="btn btn-success" type="submit"><i class="bi bi-person-plus" aria-hidden="true"></i> Registrar empleado</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

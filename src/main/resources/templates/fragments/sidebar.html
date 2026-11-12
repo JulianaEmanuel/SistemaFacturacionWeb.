@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+	<aside th:fragment="sidebar(activePage)" class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="appSidebar" aria-label="Navegación principal">
+		<div class="sidebar-brand offcanvas-header">
+			<a class="brand-lockup" th:href="@{/}">
+				<span class="brand-mark"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i></span>
+				<span class="brand-name">Sistema<span>Facturación</span></span>
+			</a>
+			<button class="btn-close btn-close-white d-lg-none" type="button" data-bs-dismiss="offcanvas" data-bs-target="#appSidebar" aria-label="Cerrar menú"></button>
+		</div>
+		<div class="offcanvas-body p-0 d-flex flex-column">
+			<p class="nav-caption">MENÚ PRINCIPAL</p>
+			<nav class="sidebar-nav">
+				<a class="sidebar-link" th:classappend="${activePage == 'dashboard'} ? ' is-active' : ''" th:href="@{/}">
+					<i class="bi bi-grid-1x2" aria-hidden="true"></i><span>Inicio</span>
+				</a>
+				<p class="nav-caption nav-caption-spaced">GESTIÓN</p>
+				<a class="sidebar-link" th:classappend="${activePage == 'clientes'} ? ' is-active' : ''" th:href="@{/modulos/clientes}"><i class="bi bi-people" aria-hidden="true"></i><span>Clientes</span></a>
+				<a class="sidebar-link" th:classappend="${activePage == 'productos'} ? ' is-active' : ''" th:href="@{/modulos/productos}"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Productos</span></a>
+				<a th:if="${administracionDisponible}" class="sidebar-link" th:classappend="${activePage == 'proveedores'} ? ' is-active' : ''" th:href="@{/modulos/proveedores}"><i class="bi bi-truck" aria-hidden="true"></i><span>Proveedores</span></a>
+				<a th:if="${administracionDisponible}" class="sidebar-link" th:classappend="${activePage == 'empleados'} ? ' is-active' : ''" th:href="@{/modulos/empleados}"><i class="bi bi-person-workspace" aria-hidden="true"></i><span>Empleados</span></a>
+				<a class="sidebar-link" th:classappend="${activePage == 'facturas'} ? ' is-active' : ''" th:href="@{/modulos/facturas}"><i class="bi bi-file-earmark-text" aria-hidden="true"></i><span>Facturas</span></a>
+				<a th:if="${administracionDisponible}" class="sidebar-link" th:classappend="${activePage == 'usuarios'} ? ' is-active' : ''" th:href="@{/modulos/usuarios}"><i class="bi bi-person-gear" aria-hidden="true"></i><span>Usuarios</span></a>
+				<a th:if="${administracionDisponible}" class="sidebar-link sidebar-sublink" th:classappend="${activePage == 'tipos-usuario'} ? ' is-active' : ''" th:href="@{/modulos/tipos-usuario}"><i class="bi bi-shield-lock" aria-hidden="true"></i><span>Tipos de usuario</span></a>
+				<a class="sidebar-link" th:classappend="${activePage == 'reportes'} ? ' is-active' : ''" th:href="@{/modulos/reportes}"><i class="bi bi-bar-chart-line" aria-hidden="true"></i><span>Reportes</span></a>
+			</nav>
+			<div class="sidebar-footer">
+				<span class="footer-dot" aria-hidden="true"></span>
+				<span>Espacio de trabajo</span>
+			</div>
+		</div>
+	</aside>
+</body>
+</html>

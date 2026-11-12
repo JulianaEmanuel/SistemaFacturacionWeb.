@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mi perfil | Sistema de Facturación Web')}"></head>
+<body class="dashboard-page management-page">
+<div class="app-shell">
+    <aside th:replace="~{fragments/sidebar :: sidebar('perfil')}"></aside>
+    <div class="app-main">
+        <header th:replace="~{fragments/topbar :: topbar('Mi perfil', 'TU CUENTA')}"></header>
+        <main class="content-area">
+            <section class="page-intro"><p class="eyebrow">PERSONALIZA TU CUENTA</p><h2>Foto de perfil</h2><p class="intro-copy">Elige la imagen que aparecerá junto a tu nombre en el sistema.</p></section>
+            <section class="cliente-panel cliente-form-panel profile-panel">
+                <div th:if="${exitoPerfil}" class="alert alert-success" role="status" th:text="${exitoPerfil}"></div>
+                <div th:if="${errorPerfil}" class="alert alert-danger" role="alert" th:text="${errorPerfil}"></div>
+                <div class="profile-summary"><img class="profile-preview" th:src="@{/perfil/foto}" id="profile-preview" alt="Tu foto de perfil" width="128" height="128"><div><h3 th:text="${cuentaActual}">Usuario</h3><p>Tu cuenta, tu imagen.</p></div></div>
+                <div class="portal-message message-warning" role="note">Para recuperar tu contraseña por correo, primero verifica una dirección en <a th:href="@{/cuenta/correo}">Seguridad de la cuenta</a>.</div>
+                <form method="post" th:action="@{/perfil/foto}" enctype="multipart/form-data" id="profile-photo-form">
+                    <label for="profile-photo" class="form-label">Nueva foto de perfil</label>
+                    <input class="form-control" type="file" name="foto" id="profile-photo" accept="image/jpeg,image/png" required aria-describedby="profile-photo-help profile-photo-error">
+                    <p id="profile-photo-help" class="field-hint">JPG o PNG, máximo 2 MB, hasta 4096 píxeles por lado y 8 megapíxeles. Se recortará al centro en formato cuadrado.</p>
+                    <p id="profile-photo-error" class="field-error" role="alert" hidden></p>
+                    <div class="cliente-form-actions"><a class="btn btn-outline-secondary" th:href="@{/}">Volver al inicio</a><button class="btn btn-success" type="submit"><i class="bi bi-camera" aria-hidden="true"></i> Guardar foto</button></div>
+                </form>
+            </section>
+        </main>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+<script th:src="@{/js/perfil.js}"></script>
+</body>
+</html>

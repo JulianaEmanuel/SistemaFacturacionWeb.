@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${modoEdicion} ? 'Editar empleado | Sistema de Facturación Web' : 'Registrar empleado | Sistema de Facturación Web')}"></head>
+<body class="dashboard-page management-page">
+<div class="app-shell">
+    <aside th:replace="~{fragments/sidebar :: sidebar('empleados')}"></aside>
+    <div class="app-main">
+        <header th:replace="~{fragments/topbar :: topbar(${modoEdicion} ? 'Editar empleado' : 'Registrar empleado', 'GESTIÓN DE EMPLEADOS')}"></header>
+        <main class="content-area">
+            <section class="page-intro" aria-labelledby="empleado-form-title">
+                <p class="eyebrow">EQUIPO DE TRABAJO</p>
+                <h2 id="empleado-form-title" th:text="${modoEdicion} ? 'Editar empleado' : 'Registrar empleado'"></h2>
+                <p class="intro-copy">Selecciona una persona y un usuario. Cada uno puede estar asociado a un solo empleado.</p>
+            </section>
+            <section class="cliente-panel cliente-form-panel">
+                <div th:if="${#lists.isEmpty(personas)}" class="alert alert-warning" role="status">No hay personas disponibles para asociar.</div>
+                <div th:if="${#lists.isEmpty(usuarios)}" class="alert alert-warning" role="status">No hay usuarios disponibles para asociar.</div>
+                <form method="post" th:action="${formAction}" th:object="${empleadoForm}" novalidate>
+                    <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger" role="alert">Revisa los campos marcados antes de continuar.
+                        <div th:each="error : ${#fields.globalErrors()}" th:text="${error}"></div>
+                    </div>
+                    <div class="cliente-form-grid">
+                        <div class="mb-3">
+                            <label class="form-label" for="idPersona">Persona <span class="required-mark">*</span></label>
+                            <select id="idPersona" class="form-select" th:field="*{idPersona}" th:classappend="${#fields.hasErrors('idPersona')} ? 'is-invalid' : ''" required aria-describedby="persona-hint persona-error">
+                                <option value="">Selecciona una persona</option>
+                                <option th:each="persona : ${personas}" th:value="${persona.idPersona}" th:text="|${#strings.trim(persona.cedulaPersona)} — ${#strings.trim(persona.nombresPersona)} ${#strings.trim(persona.apellidosPersona)}|"></option>
+                            </select>
+                            <div id="persona-hint" class="field-hint">Cédula — nombres y apellidos. Solo aparecen personas disponibles.</div>
+                            <div id="persona-error" class="field-error" th:if="${#fields.hasErrors('idPersona')}" th:errors="*{idPersona}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="idUsuario">Usuario <span class="required-mark">*</span></label>
+                            <select id="idUsuario" class="form-select" th:field="*{idUsuario}" th:classappend="${#fields.hasErrors('idUsuario')} ? 'is-invalid' : ''" required aria-describedby="usuario-hint usuario-error">
+                                <option value="">Selecciona un usuario</option>
+                                <option th:each="usuario : ${usuarios}" th:value="${usuario.idUsuario}" th:text="${#strings.trim(usuario.nombreUsuario) + (usuario.activo ? '' : ' (inactivo, actual)')}"></option>
+                            </select>
+                            <div id="usuario-hint" class="field-hint">Solo usuarios activos disponibles. Al editar puedes conservar el usuario actual aunque esté inactivo.</div>
+                            <div id="usuario-error" class="field-error" th:if="${#fields.hasErrors('idUsuario')}" th:errors="*{idUsuario}"></div>
+                        </div>
+                    </div>
+                    <div class="cliente-form-actions">
+                        <a class="btn btn-outline-secondary" th:href="@{/modulos/empleados}">Cancelar</a>
+                        <button class="btn btn-success" type="submit" th:disabled="${#lists.isEmpty(personas) or #lists.isEmpty(usuarios)}"><i class="bi bi-check2" aria-hidden="true"></i> <span th:text="${modoEdicion} ? 'Guardar cambios' : 'Registrar empleado'"></span></button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

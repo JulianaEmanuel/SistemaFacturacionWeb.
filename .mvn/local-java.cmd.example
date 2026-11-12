@@ -1,0 +1,2 @@
+@REM Copiar como local-java.cmd y ajustar a la instalación del equipo.
+@SET "JAVA_HOME=C:\ruta\al\jdk-21"

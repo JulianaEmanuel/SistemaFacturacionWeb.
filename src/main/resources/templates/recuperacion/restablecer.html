@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Establecer contraseña | Sistema de Facturación Web')}"></head>
+<body class="login-page">
+<button class="theme-toggle login-theme-toggle" type="button" data-theme-toggle hidden aria-label="Activar modo oscuro" aria-pressed="false" title="Activar modo oscuro"><i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i></button>
+<main class="login-stage">
+    <div class="login-orb orb-one" aria-hidden="true"></div><div class="login-orb orb-two" aria-hidden="true"></div><div class="login-grid" aria-hidden="true"></div>
+    <a class="login-brand" th:href="@{/login}" aria-label="Sistema de Facturación Web">
+        <span class="portal-logo" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M9 5h14v23l-3-2-4 2-4-2-3 2V5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13 11h6m-6 5h6m-6 5h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+        <span>Sistema de Facturación <strong>Web</strong></span>
+    </a>
+    <section class="login-card" aria-labelledby="reset-title">
+        <div class="login-card-symbol"><i class="bi bi-key" aria-hidden="true"></i></div>
+        <p class="portal-eyebrow">RECUPERACIÓN SEGURA</p>
+        <h1 id="reset-title">Establece una contraseña nueva</h1>
+        <p class="login-description">Usa entre 12 y 128 caracteres. Se respetan los espacios al inicio y al final.</p>
+        <div th:if="${error}" class="portal-message message-error" role="alert" th:text="${error}"></div>
+        <div th:if="${exito}" class="portal-message message-success" role="status">La contraseña se actualizó. Inicia sesión con tu nueva contraseña.</div>
+        <form th:unless="${exito}" method="post" th:action="@{/restablecer-contrasenia}" class="login-form">
+            <input type="hidden" name="token" th:value="${token}">
+            <label for="password">Contraseña nueva</label>
+            <div class="login-input"><i class="bi bi-lock" aria-hidden="true"></i><input id="password" name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password" required></div>
+            <label for="confirmation">Confirma la contraseña nueva</label>
+            <div class="login-input"><i class="bi bi-lock" aria-hidden="true"></i><input id="confirmation" name="confirmation" type="password" minlength="12" maxlength="128" autocomplete="new-password" required></div>
+            <button class="portal-primary login-submit" type="submit">Guardar contraseña <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+        </form>
+        <p class="login-security"><i class="bi bi-lock-fill" aria-hidden="true"></i> Enlace de un solo uso, válido durante 15 minutos</p>
+    </section>
+    <a class="login-footer" th:href="@{/login}">Volver a iniciar sesión</a>
+</main>
+<script th:src="@{/js/login.js}"></script>
+</body></html>
